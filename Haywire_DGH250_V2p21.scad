@@ -1,7 +1,7 @@
 //
 // Haywire Tackle DGH-250 Rev B - Version 2.20 TAPERED CONE TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Full tapered cone tip with slight blunt point - properly connected to body
+// Updated: Full tapered cone tip with slight blunt point - single solid piece
 //
 
 $fn = 150;
@@ -89,8 +89,7 @@ difference()
 module body_main()
 {
     // Tapered cone tip: 8mm length, tapers from 8mm radius to 0.5mm blunt point
-    translate([0, 0, 0])
-        tip_tapered_cone();
+    cylinder(h = tipLength, r1 = 8, r2 = tipBluntRadius, $fn = 120);
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
     translate([0, 0, tipLength])
@@ -103,22 +102,6 @@ module body_main()
     // Extended cylinder section: 25mm - maintains full radius (19.05mm)
     translate([0, 0, tipLength + 40.8])
         cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
-}
-
-
-//----------------------------
-// Tapered Cone Tip with Slight Blunt Point
-// Full cone from base to blunt point - properly connected
-//----------------------------
-
-module tip_tapered_cone()
-{
-    // Tapered cone: from 8mm radius at base to 0.5mm blunt radius at tip
-    cylinder(h = tipLength, r1 = 8, r2 = tipBluntRadius, $fn = 120);
-    
-    // Small hemisphere at the tip for slight blunt finish
-    translate([0, 0, tipLength])
-        sphere(r = tipBluntRadius, $fn = 100);
 }
 
 
