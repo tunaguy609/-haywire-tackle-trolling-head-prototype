@@ -2,7 +2,7 @@
 // Haywire Tackle DGH-250 Rev B - Version 2.19 EXTENDED CYLINDER
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
 // Updated: Extended widest diameter section by 10mm for more cylinder shape
-// Enhanced: Engraved hydrodynamic grooves recessed into body
+// Enhanced: Visible engraved hydrodynamic grooves on body
 //
 
 $fn = 150;
@@ -31,9 +31,10 @@ leaderHoleTaperRadius = 6.35;  // 12.7mm diameter at end of pocket (0.5")
 
 // Grooves (dual hydrodynamic) - ENGRAVED
 groove1Pos = 18;
+groove1Height = 4;         // Height span of groove 1
 groove2Pos = 27;
-grooveWidth = 4.0;         // Width of engraved groove
-grooveDepth = 2.8;         // Depth of engraved groove (recessed)
+groove2Height = 4;         // Height span of groove 2
+grooveDepth = 2.5;         // Depth of engraved groove (recessed from surface)
 
 // Eye sockets (recessed, on sides)
 eyeDia = 6.0;
@@ -72,9 +73,9 @@ difference()
     translate([0, 0, bodyLength])
         cylinder(h = skirtPocketDepth, r1 = leaderHoleRadius, r2 = leaderHoleTaperRadius, $fn = 100);
 
-    // Hydrodynamic grooves - ENGRAVED (recessed into body)
-    groove_engrave(groove1Pos);
-    groove_engrave(groove2Pos);
+    // Hydrodynamic grooves - ENGRAVED (cut from surface)
+    groove_cut_v2(groove1Pos, groove1Height);
+    groove_cut_v2(groove2Pos, groove2Height);
 
     // Eye sockets (both sides)
     eye_socket(1);
@@ -161,35 +162,31 @@ module rib_band(zStart, zHeight)
 
 
 //----------------------------
-// Hydrodynamic Groove Engrave - RECESSED
-// Engraved grooves cut into the surface (not extruding)
-// Creates a longitudinal channel along the body
+// Hydrodynamic Groove Cutter V2
+// Creates a visible engraved groove using a rounded rectangular profile
+// Positioned at a specific Z location with defined height span
 //----------------------------
 
-module groove_engrave(zPos)
+module groove_cut_v2(zPos, grooveHeight)
 {
     translate([0, 0, zPos])
-        rotate_extrude(convexity = 10, $fn = 100)
+        linear_extrude(height = grooveHeight, convexity = 10)
         {
-            // Create a recessed groove profile
-            polygon(points=[
-                // Outer edge of body (at bodyMaxRadius)
-                [bodyMaxRadius, 0],
+            // 2D profile: create a groove cutter on the perimeter
+            // This creates a wedge that will cut into the cylinder
+            
+            difference()
+            {
+                // Outer circle (larger than body)
+                circle(r = bodyMaxRadius + 2, $fn = 100);
                 
-                // Inner edge of groove (recessed down)
-                [bodyMaxRadius - grooveDepth, 0],
+                // Inner circle (body surface, slightly smaller)
+                circle(r = bodyMaxRadius - 0.1, $fn = 100);
                 
-                // Groove width at depth
-                [bodyMaxRadius - grooveDepth, grooveWidth / 2],
-                [bodyMaxRadius - grooveDepth, -grooveWidth / 2],
-                
-                // Back to surface
-                [bodyMaxRadius, -grooveWidth / 2],
-                [bodyMaxRadius, grooveWidth / 2],
-                
-                // Close polygon
-                [bodyMaxRadius, 0]
-            ]);
+                // Groove channel removal (rectangular notch)
+                translate([bodyMaxRadius - grooveDepth/2, -1.5])
+                    square([grooveDepth + 1, 3], center = false);
+            }
         }
 }
 
