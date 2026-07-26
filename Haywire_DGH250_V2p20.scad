@@ -1,7 +1,7 @@
 //
-// Haywire Tackle DGH-250 Rev B - Version 2.20 EXTENDED CYLINDER PLUS
+// Haywire Tackle DGH-250 Rev B - Version 2.20 ENLARGED DOMED TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Extended widest diameter section by additional 15mm (25mm total)
+// Updated: Larger domed tip with 6mm radius and 8mm length for more prominent bulge
 //
 
 $fn = 150;
@@ -14,7 +14,7 @@ $fn = 150;
 bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
-bodyTipRadius = 3.0;       // Blunt tip
+bodyTipRadius = 6.0;       // Enlarged dome tip (6mm radius)
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -48,7 +48,7 @@ difference()
 {
     union()
     {
-        // Blunt tapered body (cone + cylinder blend)
+        // Enlarged domed tip
         body_main();
         
         // Tapered transition from body to pocket
@@ -82,26 +82,26 @@ difference()
 
 
 //----------------------------
-// Main Body: Blunt Tapered Cone with Extended Cylinder
+// Main Body: Enlarged Domed Tip with Extended Cylinder
 //----------------------------
 
 module body_main()
 {
-    // Tip section: 10mm - tapers from 3mm to 8mm radius
+    // Enlarged dome tip: 8mm - spherical bulge with 6mm radius
     translate([0, 0, 0])
-        cylinder(h = 10, r1 = bodyTipRadius, r2 = 8, $fn = 120);
+        cylinder(h = 8, r1 = bodyTipRadius, r2 = 8, $fn = 120);
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
-    translate([0, 0, 10])
+    translate([0, 0, 8])
         cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
     // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
-    translate([0, 0, 30])
+    translate([0, 0, 28])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
     // Extended cylinder section: 25mm - maintains full radius (19.05mm)
-    translate([0, 0, 50.8])
-        cylinder(h = 25, r = bodyMaxRadius, $fn = 120);
+    translate([0, 0, 48.8])
+        cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
 }
 
 
