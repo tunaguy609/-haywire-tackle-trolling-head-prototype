@@ -1,7 +1,7 @@
 //
 // Haywire Tackle DGH-250 Rev B - Version 2.19 EXTENDED CYLINDER
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Extended widest diameter section by 10mm for more cylinder shape
+// Updated: Extended widest diameter section by additional 10mm (total 20mm at max dia)
 // Enhanced: Visible engraved hydrodynamic grooves on body
 //
 
@@ -12,7 +12,7 @@ $fn = 150;
 //----------------------------
 
 // Bullet body
-bodyLength = 60.8;         // Extended from 50.8 to 60.8 (10mm added)
+bodyLength = 70.8;         // Extended from 60.8 to 70.8 (additional 10mm at widest)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
 bodyTipRadius = 3.0;       // Blunt tip
@@ -101,9 +101,9 @@ module body_main()
     translate([0, 0, 30])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
-    // Extended cylinder section: 10mm - maintains full radius (19.05mm)
+    // Extended cylinder section: 20mm - maintains full radius (19.05mm) - NOW 20MM
     translate([0, 0, 50.8])
-        cylinder(h = 10, r = bodyMaxRadius, $fn = 120);
+        cylinder(h = 20, r = bodyMaxRadius, $fn = 120);
 }
 
 
