@@ -2,7 +2,7 @@
 // Haywire Tackle DGH-250 Rev B - Version 2.19 EXTENDED CYLINDER
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
 // Updated: Extended widest diameter section by 10mm for more cylinder shape
-// Enhanced: More pronounced hydrodynamic grooves for better visibility
+// Enhanced: Engraved hydrodynamic grooves recessed into body
 //
 
 $fn = 150;
@@ -29,11 +29,11 @@ transitionLength = 3.0;    // 3mm taper from body to pocket
 leaderHoleRadius = 2.0;    // 4mm diameter at start
 leaderHoleTaperRadius = 6.35;  // 12.7mm diameter at end of pocket (0.5")
 
-// Grooves (dual hydrodynamic) - ENHANCED
+// Grooves (dual hydrodynamic) - ENGRAVED
 groove1Pos = 18;
 groove2Pos = 27;
-grooveWidth = 3.5;         // Increased from 2.2mm
-grooveDepth = 2.8;         // Increased from 1.4mm (doubled)
+grooveWidth = 4.0;         // Width of engraved groove
+grooveDepth = 2.8;         // Depth of engraved groove (recessed)
 
 // Eye sockets (recessed, on sides)
 eyeDia = 6.0;
@@ -72,9 +72,9 @@ difference()
     translate([0, 0, bodyLength])
         cylinder(h = skirtPocketDepth, r1 = leaderHoleRadius, r2 = leaderHoleTaperRadius, $fn = 100);
 
-    // Hydrodynamic grooves - ENHANCED
-    groove_cut(groove1Pos);
-    groove_cut(groove2Pos);
+    // Hydrodynamic grooves - ENGRAVED (recessed into body)
+    groove_engrave(groove1Pos);
+    groove_engrave(groove2Pos);
 
     // Eye sockets (both sides)
     eye_socket(1);
@@ -161,16 +161,36 @@ module rib_band(zStart, zHeight)
 
 
 //----------------------------
-// Hydrodynamic Groove Cutter - ENHANCED
-// Deeper and wider grooves for better water flow and visibility
+// Hydrodynamic Groove Engrave - RECESSED
+// Engraved grooves cut into the surface (not extruding)
+// Creates a longitudinal channel along the body
 //----------------------------
 
-module groove_cut(zPos)
+module groove_engrave(zPos)
 {
     translate([0, 0, zPos])
         rotate_extrude(convexity = 10, $fn = 100)
-            translate([bodyMaxRadius - grooveDepth/2, 0])
-                circle(r = grooveDepth/2, $fn = 80);
+        {
+            // Create a recessed groove profile
+            polygon(points=[
+                // Outer edge of body (at bodyMaxRadius)
+                [bodyMaxRadius, 0],
+                
+                // Inner edge of groove (recessed down)
+                [bodyMaxRadius - grooveDepth, 0],
+                
+                // Groove width at depth
+                [bodyMaxRadius - grooveDepth, grooveWidth / 2],
+                [bodyMaxRadius - grooveDepth, -grooveWidth / 2],
+                
+                // Back to surface
+                [bodyMaxRadius, -grooveWidth / 2],
+                [bodyMaxRadius, grooveWidth / 2],
+                
+                // Close polygon
+                [bodyMaxRadius, 0]
+            ]);
+        }
 }
 
 
