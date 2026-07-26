@@ -1,7 +1,7 @@
 //
-// Haywire Tackle DGH-250 Rev B - Version 2.21 SMOOTH TAPER
+// Haywire Tackle DGH-250 Rev B - Version 2.21 HEMISPHERICAL DOMED TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Smoother, less aggressive taper from tip to widest point with multiple intermediate steps
+// Updated: Hemispherical dome tip (6mm radius) with rounded, curved end
 //
 
 $fn = 150;
@@ -11,10 +11,10 @@ $fn = 150;
 //----------------------------
 
 // Bullet body
-bodyLength = 75.8;         // Extended cylinder section
+bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
-bodyTipRadius = 3.0;       // Blunt tip
+bodyTipRadius = 6.0;       // Hemispherical dome tip (6mm radius)
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -48,7 +48,7 @@ difference()
 {
     union()
     {
-        // Blunt tapered body (cone + cylinder blend)
+        // Hemispherical domed tip
         body_main();
         
         // Tapered transition from body to pocket
@@ -82,43 +82,30 @@ difference()
 
 
 //----------------------------
-// Main Body: Smooth Multi-Step Taper with Extended Cylinder
-// More intermediate steps for less aggressive taper
+// Main Body: Hemispherical Domed Tip with Extended Cylinder
 //----------------------------
 
 module body_main()
 {
-    // Tip section: 5mm - tapers from 3mm to 5mm radius (very gentle start)
+    // Hemispherical dome tip: 6mm radius sphere at the very front
     translate([0, 0, 0])
-        cylinder(h = 5, r1 = bodyTipRadius, r2 = 5, $fn = 120);
+        sphere(r = bodyTipRadius, $fn = 120);
     
-    // Section 1: 6mm - tapers from 5mm to 7.5mm radius (gentle)
-    translate([0, 0, 5])
-        cylinder(h = 6, r1 = 5, r2 = 7.5, $fn = 120);
+    // Transition from hemisphere to main body: 6mm - tapers from 6mm to 8mm radius
+    translate([0, 0, bodyTipRadius])
+        cylinder(h = 6, r1 = bodyTipRadius, r2 = 8, $fn = 120);
     
-    // Section 2: 6mm - tapers from 7.5mm to 10mm radius (gentle)
-    translate([0, 0, 11])
-        cylinder(h = 6, r1 = 7.5, r2 = 10, $fn = 120);
+    // Middle section: 20mm - tapers from 8mm to 15mm radius
+    translate([0, 0, bodyTipRadius + 6])
+        cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
-    // Section 3: 6mm - tapers from 10mm to 12.5mm radius (gentle)
-    translate([0, 0, 17])
-        cylinder(h = 6, r1 = 10, r2 = 12.5, $fn = 120);
+    // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
+    translate([0, 0, bodyTipRadius + 26])
+        cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
-    // Section 4: 6mm - tapers from 12.5mm to 15mm radius (gentle)
-    translate([0, 0, 23])
-        cylinder(h = 6, r1 = 12.5, r2 = 15, $fn = 120);
-    
-    // Section 5: 6mm - tapers from 15mm to 17mm radius (gentle)
-    translate([0, 0, 29])
-        cylinder(h = 6, r1 = 15, r2 = 17, $fn = 120);
-    
-    // Section 6: 8.8mm - tapers from 17mm to full radius (19.05mm)
-    translate([0, 0, 35])
-        cylinder(h = 8.8, r1 = 17, r2 = bodyMaxRadius, $fn = 120);
-    
-    // Extended cylinder section: 25mm - maintains full radius (19.05mm)
-    translate([0, 0, 43.8])
-        cylinder(h = 32, r = bodyMaxRadius, $fn = 120);
+    // Extended cylinder section: 27mm - maintains full radius (19.05mm)
+    translate([0, 0, bodyTipRadius + 46.8])
+        cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
 }
 
 
