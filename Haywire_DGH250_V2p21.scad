@@ -1,7 +1,7 @@
 //
-// Haywire Tackle DGH-250 Rev B - Version 2.20 ENLARGED DOMED TIP
+// Haywire Tackle DGH-250 Rev B - Version 2.20 TAPERED CONE TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Larger domed tip with 6mm radius and 6mm length (2mm sliced off) + 1mm round-over edge blend
+// Updated: Full tapered cone tip with slight blunt point + 1mm round-over edge blend
 //
 
 $fn = 150;
@@ -14,9 +14,9 @@ $fn = 150;
 bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
-bodyTipRadius = 6.0;       // Enlarged dome tip (6mm radius)
-tipHeight = 6.0;           // 8mm - 2mm slice = 6mm
-tipRoundoverRadius = 1.0;  // 1mm round-over edge blend
+tipLength = 8.0;           // Tapered cone tip length
+tipBluntRadius = 0.5;      // Slight blunt point (0.5mm radius)
+tipRoundoverRadius = 1.0;  // 1mm round-over edge blend at base
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -50,7 +50,7 @@ difference()
 {
     union()
     {
-        // Enlarged domed tip with round-over edge blend (2mm sliced off)
+        // Tapered cone tip with slight blunt point
         body_main();
         
         // Tapered transition from body to pocket
@@ -84,61 +84,53 @@ difference()
 
 
 //----------------------------
-// Main Body: Enlarged Domed Tip (2mm Sliced) with Round-Over Edge Blend
+// Main Body: Tapered Cone Tip with Slight Blunt Point
 //----------------------------
 
 module body_main()
 {
-    // Dome tip section: 6mm height (sliced 2mm from 8mm) with round-over edges
+    // Tapered cone tip: 8mm length, tapers from 8mm radius to 0.5mm blunt point
     translate([0, 0, 0])
-        tip_with_roundover();
+        tip_tapered_cone();
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
-    translate([0, 0, tipHeight])
+    translate([0, 0, tipLength])
         cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
     // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
-    translate([0, 0, tipHeight + 20])
+    translate([0, 0, tipLength + 20])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
     // Extended cylinder section: 25mm - maintains full radius (19.05mm)
-    translate([0, 0, tipHeight + 40.8])
+    translate([0, 0, tipLength + 40.8])
         cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
 }
 
 
 //----------------------------
-// Tip Section with 1mm Round-Over Edge Blend (2mm Sliced)
-// Creates a tapered dome with rounded edge transition
+// Tapered Cone Tip with Slight Blunt Point
+// Full cone from base to blunt point with round-over edge blend at base
 //----------------------------
 
-module tip_with_roundover()
+module tip_tapered_cone()
 {
-    difference()
-    {
-        // Base: 6mm height (2mm sliced), tapering from 6mm radius at tip to 8mm radius at base
-        cylinder(h = tipHeight, r1 = bodyTipRadius - 1, r2 = 8, $fn = 120);
-        
-        // Round-over the top edge using a torus segment
-        translate([0, 0, tipHeight])
-            rotate_extrude(convexity = 5, $fn = 120)
-            {
-                // Torus profile for 1mm round-over at tapered tip
-                translate([bodyTipRadius - tipRoundoverRadius - 0.5, 0])
-                    circle(r = tipRoundoverRadius, $fn = 80);
-            }
-    }
+    // Tapered cone: from 8mm radius at base to 0.5mm blunt radius at tip
+    cylinder(h = tipLength, r1 = 8, r2 = tipBluntRadius, $fn = 120);
     
-    // Add the round-over bulge (inverse operation)
-    translate([0, 0, tipHeight])
+    // Small hemisphere at the tip for slight blunt finish
+    translate([0, 0, tipLength])
+        sphere(r = tipBluntRadius, $fn = 100);
+    
+    // Round-over blend at the base where cone meets body
+    translate([0, 0, 0])
         rotate_extrude(convexity = 5, $fn = 120)
         {
-            // Rounded edge profile: curves smoothly at tapered tip
+            // Rounded edge profile: curves inward from 8mm radius
             polygon(points=[
-                [bodyTipRadius - tipRoundoverRadius - 0.5, 0],
-                [bodyTipRadius - 0.5, 0],
-                [bodyTipRadius - 0.2, tipRoundoverRadius * 0.5],
-                [bodyTipRadius - tipRoundoverRadius - 0.8, tipRoundoverRadius]
+                [8 - tipRoundoverRadius, 0],
+                [8, 0],
+                [8 + tipRoundoverRadius * 0.25, tipRoundoverRadius * 0.5],
+                [8 - tipRoundoverRadius * 0.5, tipRoundoverRadius]
             ]);
         }
 }
