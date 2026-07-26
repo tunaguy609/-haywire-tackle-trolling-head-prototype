@@ -1,7 +1,7 @@
 //
-// Haywire Tackle DGH-250 Rev B - Version 2.20 TAPERED CONE TIP
+// Haywire Tackle DGH-250 Rev B - Version 2.19 EXTENDED CYLINDER
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Full tapered cone tip with slight blunt point - single solid piece
+// Updated: Extended widest diameter section by 10mm for more cylinder shape
 //
 
 $fn = 150;
@@ -11,11 +11,10 @@ $fn = 150;
 //----------------------------
 
 // Bullet body
-bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
+bodyLength = 60.8;         // Extended from 50.8 to 60.8 (10mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
-tipLength = 8.0;           // Tapered cone tip length
-tipBluntRadius = 0.5;      // Slight blunt point (0.5mm radius)
+bodyTipRadius = 3.0;       // Blunt tip
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -49,7 +48,7 @@ difference()
 {
     union()
     {
-        // Tapered cone tip with slight blunt point
+        // Blunt tapered body (cone + cylinder blend)
         body_main();
         
         // Tapered transition from body to pocket
@@ -83,25 +82,26 @@ difference()
 
 
 //----------------------------
-// Main Body: Tapered Cone Tip with Slight Blunt Point
+// Main Body: Blunt Tapered Cone with Extended Cylinder
 //----------------------------
 
 module body_main()
 {
-    // Tapered cone tip: 8mm length, tapers from 8mm radius to 0.5mm blunt point
-    cylinder(h = tipLength, r1 = 8, r2 = tipBluntRadius, $fn = 120);
+    // Tip section: 10mm - tapers from 3mm to 8mm radius
+    translate([0, 0, 0])
+        cylinder(h = 10, r1 = bodyTipRadius, r2 = 8, $fn = 120);
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
-    translate([0, 0, tipLength])
+    translate([0, 0, 10])
         cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
     // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
-    translate([0, 0, tipLength + 20])
+    translate([0, 0, 30])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
-    // Extended cylinder section: 25mm - maintains full radius (19.05mm)
-    translate([0, 0, tipLength + 40.8])
-        cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
+    // Extended cylinder section: 10mm - maintains full radius (19.05mm)
+    translate([0, 0, 50.8])
+        cylinder(h = 10, r = bodyMaxRadius, $fn = 120);
 }
 
 
