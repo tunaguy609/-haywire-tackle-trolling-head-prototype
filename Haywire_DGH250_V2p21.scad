@@ -2,6 +2,7 @@
 // Haywire Tackle DGH-250 Rev B - Version 2.19 EXTENDED CYLINDER
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
 // Updated: Extended widest diameter section by 10mm for more cylinder shape
+// Enhanced: More pronounced hydrodynamic grooves for better visibility
 //
 
 $fn = 150;
@@ -28,11 +29,11 @@ transitionLength = 3.0;    // 3mm taper from body to pocket
 leaderHoleRadius = 2.0;    // 4mm diameter at start
 leaderHoleTaperRadius = 6.35;  // 12.7mm diameter at end of pocket (0.5")
 
-// Grooves (dual hydrodynamic)
+// Grooves (dual hydrodynamic) - ENHANCED
 groove1Pos = 18;
 groove2Pos = 27;
-grooveWidth = 2.2;
-grooveDepth = 1.4;
+grooveWidth = 3.5;         // Increased from 2.2mm
+grooveDepth = 2.8;         // Increased from 1.4mm (doubled)
 
 // Eye sockets (recessed, on sides)
 eyeDia = 6.0;
@@ -71,7 +72,7 @@ difference()
     translate([0, 0, bodyLength])
         cylinder(h = skirtPocketDepth, r1 = leaderHoleRadius, r2 = leaderHoleTaperRadius, $fn = 100);
 
-    // Hydrodynamic grooves
+    // Hydrodynamic grooves - ENHANCED
     groove_cut(groove1Pos);
     groove_cut(groove2Pos);
 
@@ -160,7 +161,8 @@ module rib_band(zStart, zHeight)
 
 
 //----------------------------
-// Hydrodynamic Groove Cutter
+// Hydrodynamic Groove Cutter - ENHANCED
+// Deeper and wider grooves for better water flow and visibility
 //----------------------------
 
 module groove_cut(zPos)
@@ -168,7 +170,7 @@ module groove_cut(zPos)
     translate([0, 0, zPos])
         rotate_extrude(convexity = 10, $fn = 100)
             translate([bodyMaxRadius - grooveDepth/2, 0])
-                circle(r = grooveDepth/2);
+                circle(r = grooveDepth/2, $fn = 80);
 }
 
 
