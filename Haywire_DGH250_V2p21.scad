@@ -1,7 +1,7 @@
 //
 // Haywire Tackle DGH-250 Rev B - Version 2.20 ENLARGED DOMED TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Larger domed tip with 6mm radius and 8mm length + 1mm round-over edge blend
+// Updated: Larger domed tip with 6mm radius and 6mm length (2mm sliced off) + 1mm round-over edge blend
 //
 
 $fn = 150;
@@ -15,6 +15,7 @@ bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
 bodyTipRadius = 6.0;       // Enlarged dome tip (6mm radius)
+tipHeight = 6.0;           // 8mm - 2mm slice = 6mm
 tipRoundoverRadius = 1.0;  // 1mm round-over edge blend
 
 // Skirt pocket (attached to rear)
@@ -49,7 +50,7 @@ difference()
 {
     union()
     {
-        // Enlarged domed tip with round-over edge blend
+        // Enlarged domed tip with round-over edge blend (2mm sliced off)
         body_main();
         
         // Tapered transition from body to pocket
@@ -83,62 +84,61 @@ difference()
 
 
 //----------------------------
-// Main Body: Enlarged Domed Tip with Round-Over Edge Blend
+// Main Body: Enlarged Domed Tip (2mm Sliced) with Round-Over Edge Blend
 //----------------------------
 
 module body_main()
 {
-    // Flat dome tip section: 8mm - maintains 6mm radius with round-over edges
+    // Dome tip section: 6mm height (sliced 2mm from 8mm) with round-over edges
     translate([0, 0, 0])
         tip_with_roundover();
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
-    translate([0, 0, 8])
+    translate([0, 0, tipHeight])
         cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
     // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
-    translate([0, 0, 28])
+    translate([0, 0, tipHeight + 20])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
     // Extended cylinder section: 25mm - maintains full radius (19.05mm)
-    translate([0, 0, 48.8])
+    translate([0, 0, tipHeight + 40.8])
         cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
 }
 
 
 //----------------------------
-// Tip Section with 1mm Round-Over Edge Blend
-// Creates a flat-top cylinder with rounded edge transition
+// Tip Section with 1mm Round-Over Edge Blend (2mm Sliced)
+// Creates a tapered dome with rounded edge transition
 //----------------------------
 
 module tip_with_roundover()
 {
     difference()
     {
-        // Base cylinder: 8mm height, 6mm radius (flat top)
-        cylinder(h = 8, r = bodyTipRadius, $fn = 120);
+        // Base: 6mm height (2mm sliced), tapering from 6mm radius at tip to 8mm radius at base
+        cylinder(h = tipHeight, r1 = bodyTipRadius - 1, r2 = 8, $fn = 120);
         
         // Round-over the top edge using a torus segment
-        // Position a torus at the top edge to create smooth blend
-        translate([0, 0, 8])
+        translate([0, 0, tipHeight])
             rotate_extrude(convexity = 5, $fn = 120)
             {
-                // Torus profile for 1mm round-over
-                translate([bodyTipRadius - tipRoundoverRadius, 0])
+                // Torus profile for 1mm round-over at tapered tip
+                translate([bodyTipRadius - tipRoundoverRadius - 0.5, 0])
                     circle(r = tipRoundoverRadius, $fn = 80);
             }
     }
     
     // Add the round-over bulge (inverse operation)
-    translate([0, 0, 8])
+    translate([0, 0, tipHeight])
         rotate_extrude(convexity = 5, $fn = 120)
         {
-            // Rounded edge profile: curves inward slightly from flat
+            // Rounded edge profile: curves smoothly at tapered tip
             polygon(points=[
-                [bodyTipRadius - tipRoundoverRadius, 0],
-                [bodyTipRadius, 0],
-                [bodyTipRadius + tipRoundoverRadius * 0.25, tipRoundoverRadius * 0.5],
-                [bodyTipRadius - tipRoundoverRadius * 0.5, tipRoundoverRadius]
+                [bodyTipRadius - tipRoundoverRadius - 0.5, 0],
+                [bodyTipRadius - 0.5, 0],
+                [bodyTipRadius - 0.2, tipRoundoverRadius * 0.5],
+                [bodyTipRadius - tipRoundoverRadius - 0.8, tipRoundoverRadius]
             ]);
         }
 }
