@@ -1,7 +1,7 @@
 //
 // Haywire Tackle DGH-250 Rev B - Version 2.20 ENLARGED DOMED TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Larger domed tip with 6mm radius and 8mm length for more prominent bulge
+// Updated: Larger domed tip with 6mm radius and 8mm length + 1mm round-over edge blend
 //
 
 $fn = 150;
@@ -15,6 +15,7 @@ bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
 bodyTipRadius = 6.0;       // Enlarged dome tip (6mm radius)
+tipRoundoverRadius = 1.0;  // 1mm round-over edge blend
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -48,7 +49,7 @@ difference()
 {
     union()
     {
-        // Enlarged domed tip
+        // Enlarged domed tip with round-over edge blend
         body_main();
         
         // Tapered transition from body to pocket
@@ -82,14 +83,14 @@ difference()
 
 
 //----------------------------
-// Main Body: Enlarged Domed Tip with Extended Cylinder
+// Main Body: Enlarged Domed Tip with Round-Over Edge Blend
 //----------------------------
 
 module body_main()
 {
-    // Enlarged dome tip: 8mm - spherical bulge with 6mm radius
+    // Flat dome tip section: 8mm - maintains 6mm radius with round-over edges
     translate([0, 0, 0])
-        cylinder(h = 8, r1 = bodyTipRadius, r2 = 8, $fn = 120);
+        tip_with_roundover();
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
     translate([0, 0, 8])
@@ -102,6 +103,44 @@ module body_main()
     // Extended cylinder section: 25mm - maintains full radius (19.05mm)
     translate([0, 0, 48.8])
         cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
+}
+
+
+//----------------------------
+// Tip Section with 1mm Round-Over Edge Blend
+// Creates a flat-top cylinder with rounded edge transition
+//----------------------------
+
+module tip_with_roundover()
+{
+    difference()
+    {
+        // Base cylinder: 8mm height, 6mm radius (flat top)
+        cylinder(h = 8, r = bodyTipRadius, $fn = 120);
+        
+        // Round-over the top edge using a torus segment
+        // Position a torus at the top edge to create smooth blend
+        translate([0, 0, 8])
+            rotate_extrude(convexity = 5, $fn = 120)
+            {
+                // Torus profile for 1mm round-over
+                translate([bodyTipRadius - tipRoundoverRadius, 0])
+                    circle(r = tipRoundoverRadius, $fn = 80);
+            }
+    }
+    
+    // Add the round-over bulge (inverse operation)
+    translate([0, 0, 8])
+        rotate_extrude(convexity = 5, $fn = 120)
+        {
+            // Rounded edge profile: curves inward slightly from flat
+            polygon(points=[
+                [bodyTipRadius - tipRoundoverRadius, 0],
+                [bodyTipRadius, 0],
+                [bodyTipRadius + tipRoundoverRadius * 0.25, tipRoundoverRadius * 0.5],
+                [bodyTipRadius - tipRoundoverRadius * 0.5, tipRoundoverRadius]
+            ]);
+        }
 }
 
 
