@@ -1,7 +1,7 @@
 //
-// Haywire Tackle DGH-250 Rev B - Version 2.21 HEMISPHERICAL DOMED TIP
+// Haywire Tackle DGH-250 Rev B - Version 2.20 ENLARGED DOMED TIP
 // Smooth Elongated Bullet Fishing Lure with Skirt Pocket
-// Updated: Hemispherical dome tip (6mm radius) with rounded, curved end
+// Updated: Larger domed tip with 6mm radius and 8mm length for more prominent bulge
 //
 
 $fn = 150;
@@ -14,7 +14,7 @@ $fn = 150;
 bodyLength = 75.8;         // Extended from 60.8 to 75.8 (additional 15mm added)
 bodyMaxDia = 38.1;         // 1.5" (at rear)
 bodyMaxRadius = bodyMaxDia / 2;  // 19.05mm
-bodyTipRadius = 6.0;       // Hemispherical dome tip (6mm radius)
+bodyTipRadius = 6.0;       // Enlarged dome tip (6mm radius)
 
 // Skirt pocket (attached to rear)
 skirtPocketDia = 19.05;    // 0.75"
@@ -48,7 +48,7 @@ difference()
 {
     union()
     {
-        // Hemispherical domed tip
+        // Enlarged domed tip
         body_main();
         
         // Tapered transition from body to pocket
@@ -82,29 +82,25 @@ difference()
 
 
 //----------------------------
-// Main Body: Hemispherical Domed Tip with Extended Cylinder
+// Main Body: Enlarged Domed Tip with Extended Cylinder
 //----------------------------
 
 module body_main()
 {
-    // Hemispherical dome tip: 6mm radius sphere at the very front
+    // Enlarged dome tip: 8mm - spherical bulge with 6mm radius
     translate([0, 0, 0])
-        sphere(r = bodyTipRadius, $fn = 120);
-    
-    // Transition from hemisphere to main body: 6mm - tapers from 6mm to 8mm radius
-    translate([0, 0, bodyTipRadius])
-        cylinder(h = 6, r1 = bodyTipRadius, r2 = 8, $fn = 120);
+        cylinder(h = 8, r1 = bodyTipRadius, r2 = 8, $fn = 120);
     
     // Middle section: 20mm - tapers from 8mm to 15mm radius
-    translate([0, 0, bodyTipRadius + 6])
+    translate([0, 0, 8])
         cylinder(h = 20, r1 = 8, r2 = 15, $fn = 120);
     
     // Rear section: 20.8mm - tapers from 15mm to full radius (19.05mm)
-    translate([0, 0, bodyTipRadius + 26])
+    translate([0, 0, 28])
         cylinder(h = 20.8, r1 = 15, r2 = bodyMaxRadius, $fn = 120);
     
-    // Extended cylinder section: 27mm - maintains full radius (19.05mm)
-    translate([0, 0, bodyTipRadius + 46.8])
+    // Extended cylinder section: 25mm - maintains full radius (19.05mm)
+    translate([0, 0, 48.8])
         cylinder(h = 27, r = bodyMaxRadius, $fn = 120);
 }
 
