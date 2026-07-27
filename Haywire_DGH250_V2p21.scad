@@ -5,6 +5,8 @@
 // Enhanced: Visible engraved hydrodynamic grooves on body
 // Modified: 50% reduction in maximum diameter (38.1mm → 19.05mm, all dimensions scaled proportionally)
 // Added: 2 evenly-spaced circumferential body grooves (2mm depth, 2mm width, sharp angular cut)
+// Fixed: Eye sockets now flat-bottomed recessed pockets (2mm depth, 3mm diameter, opposite sides)
+// Updated: Skirt pocket length increased to 15mm with proportionally scaled ribs
 //
 
 $fn = 150;
@@ -23,7 +25,7 @@ bodyTipRadius = 1.5;       // Scaled from 3.0
 // Skirt pocket (attached to rear)
 skirtPocketDia = 9.525;    // Scaled from 19.05 (50% reduction, 0.375")
 skirtPocketRadius = skirtPocketDia / 2;  // 4.7625mm
-skirtPocketDepth = 6.35;   // Scaled from 12.7 (50% reduction, 0.25")
+skirtPocketDepth = 15;     // Increased from 6.35mm to 15mm
 
 // Tapered transition
 transitionLength = 1.5;    // Scaled from 3.0
@@ -39,16 +41,17 @@ groove2Pos = 13.5;         // Scaled from 27
 groove2Height = 2;         // Scaled from 4
 grooveDepth = 1.25;        // Scaled from 2.5
 
-// Body circumferential grooves - ENGRAVED (new)
+// Body circumferential grooves - ENGRAVED
 bodyGroove1Pos = 11.8;     // First groove - evenly spaced at ~1/3 of body length
 bodyGroove2Pos = 23.6;     // Second groove - evenly spaced at ~2/3 of body length
 bodyGrooveWidth = 2;       // Width of each groove band
 bodyGrooveDepth = 2;       // Depth of groove (recessed from surface)
 
-// Eye sockets (recessed, on sides)
-eyeDia = 3.0;              // Scaled from 6.0
-eyeDepth = 1.0;            // Scaled from 2.0
-eyePos = 17.5;             // Scaled from 35
+// Eye sockets (recessed, flat-bottomed, on sides)
+eyeDia = 3.0;              // Diameter of eye pocket
+eyeRadius = eyeDia / 2;    // 1.5mm radius
+eyeDepth = 2.0;            // Depth of flat-bottomed pocket
+eyePos = 17.5;             // Position along body from tip
 
 
 //----------------------------
@@ -86,13 +89,13 @@ difference()
     groove_cut_v2(groove1Pos, groove1Height);
     groove_cut_v2(groove2Pos, groove2Height);
 
-    // Body circumferential grooves - ENGRAVED (NEW)
+    // Body circumferential grooves - ENGRAVED
     body_groove_circumferential(bodyGroove1Pos, bodyGrooveWidth);
     body_groove_circumferential(bodyGroove2Pos, bodyGrooveWidth);
 
-    // Eye sockets (both sides)
-    eye_socket(1);
-    eye_socket(-1);
+    // Eye sockets - flat-bottomed recessed pockets (both sides)
+    eye_socket_flat(1);
+    eye_socket_flat(-1);
 }
 
 
@@ -135,15 +138,18 @@ module transition_taper()
 //----------------------------
 // Circumferential Ribs
 // Two tapered bands that run around the full circumference
+// Proportionally scaled to the longer skirt pocket (15mm total)
 //----------------------------
 
 module ribs_circumferential()
 {
-    // Rib 1: Front band of the pocket (tapers from front to back)
-    rib_band(0, 2.5);  // Scaled from 5mm
+    // Rib 1: Front band of the pocket (proportionally scaled)
+    // Original: 5mm, now scaled proportionally to 15mm pocket
+    rib_band(0, 6.5);  // Scaled proportionally from 2.5mm
 
-    // Rib 2: Rear band of the pocket (tapers more steeply)
-    rib_band(3, 3.35);  // Scaled from 6 and 6.7mm
+    // Rib 2: Rear band of the pocket (proportionally scaled)
+    // Original: 6.7mm, now scaled proportionally to 15mm pocket
+    rib_band(7, 7.1);  // Scaled proportionally from 3.35mm
 }
 
 
@@ -164,8 +170,8 @@ module rib_band(zStart, zHeight)
                 [skirtPocketRadius, zHeight],
                 
                 // Outer wall - tapers from front to back
-                [skirtPocketRadius + 0.6, zHeight * 0.4],  // Rear outer (tapered) - scaled from 1.2
-                [skirtPocketRadius + 0.75, 0],              // Front outer (full height) - scaled from 1.5
+                [skirtPocketRadius + 0.6, zHeight * 0.4],  // Rear outer (tapered)
+                [skirtPocketRadius + 0.75, 0],              // Front outer (full height)
                 
                 // Close the polygon
                 [skirtPocketRadius, 0]
@@ -234,14 +240,18 @@ module body_groove_circumferential(zPos, grooveWidth)
 
 
 //----------------------------
-// Recessed Eye Socket
+// Recessed Eye Socket - Flat Bottomed
+// Creates a flat-bottomed circular pocket recessed into the body surface
+// Positioned on opposite sides of the body
 //----------------------------
 
-module eye_socket(side)
+module eye_socket_flat(side)
 {
-    translate([side * (bodyMaxRadius + 0.5), 0, eyePos])  // Scaled from +1
+    // Position the eye pocket on the side of the body at eyePos along the Z-axis
+    translate([side * bodyMaxRadius, 0, eyePos])
         rotate([0, 90 * side, 0])
-            cylinder(d = eyeDia, h = eyeDepth + 1, $fn = 80);
+            // Flat-bottomed cylinder pocket
+            cylinder(h = eyeDepth, r = eyeRadius, $fn = 80);
 }
 
 
