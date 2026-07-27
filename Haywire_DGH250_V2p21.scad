@@ -7,7 +7,7 @@
 // Added: 2 evenly-spaced circumferential body grooves (2mm depth, 2mm width, sharp angular cut)
 // Fixed: Eye sockets now flat-bottomed recessed pockets (2mm depth, 3mm diameter, opposite sides)
 // Updated: Skirt pocket length increased to 15mm with proportionally scaled ribs
-// Added: Flat sides on main body (4mm width, 1mm depth, full length, opposite sides at eye socket axis)
+// Added: Shallow chamfer/bevel sides on main body (opposite sides at eye socket axis)
 //
 
 $fn = 150;
@@ -54,9 +54,9 @@ eyeRadius = eyeDia / 2;    // 1.5mm radius
 eyeDepth = 2.0;            // Depth of flat-bottomed pocket
 eyePos = 17.5;             // Position along body from tip
 
-// Flat sides on body (opposite sides at eye socket axis)
-flatWidth = 4.0;           // Width of each flat
-flatDepth = 1.0;           // Depth of flat recess
+// Chamfer/bevel sides on body (opposite sides at eye socket axis)
+chamferWidth = 4.0;        // Width of chamfer along length
+chamferDepth = 1.0;        // Shallow depth of chamfer
 
 
 //----------------------------
@@ -102,9 +102,9 @@ difference()
     eye_socket_flat(1);
     eye_socket_flat(-1);
 
-    // Flat sides on body (opposite sides at eye socket axis)
-    body_flat_side(1);
-    body_flat_side(-1);
+    // Chamfer/bevel sides on body (opposite sides at eye socket axis)
+    body_chamfer_side(1);
+    body_chamfer_side(-1);
 }
 
 
@@ -206,14 +206,14 @@ module groove_cut_v2(zPos, grooveHeight)
             difference()
             {
                 // Outer circle (larger than body)
-                circle(r = bodyMaxRadius + 1, $fn = 100);  // Scaled from +2
+                circle(r = bodyMaxRadius + 1, $fn = 100);
                 
                 // Inner circle (body surface, slightly smaller)
                 circle(r = bodyMaxRadius - 0.1, $fn = 100);
                 
                 // Groove channel removal (rectangular notch)
-                translate([bodyMaxRadius - grooveDepth/2, -0.75])  // Scaled from -1.5
-                    square([grooveDepth + 0.5, 1.5], center = false);  // Scaled from +1 and 3
+                translate([bodyMaxRadius - grooveDepth/2, -0.75])
+                    square([grooveDepth + 0.5, 1.5], center = false);
             }
         }
 }
@@ -240,7 +240,6 @@ module body_groove_circumferential(zPos, grooveWidth)
                 circle(r = bodyMaxRadius, $fn = 100);
                 
                 // Sharp V-groove channel removal (angular notch)
-                // Creates a sharp wedge cut into the surface
                 translate([bodyMaxRadius - bodyGrooveDepth/2, -1])
                     square([bodyGrooveDepth + 1, 2], center = false);
             }
@@ -265,16 +264,25 @@ module eye_socket_flat(side)
 
 
 //----------------------------
-// Flat Side on Body
-// Creates a flat recessed surface along the entire body length
+// Chamfer/Bevel Side on Body
+// Creates a shallow rounded chamfer/bevel along the entire body length
 // Positioned on opposite sides at the eye socket axis
+// Uses a tapered cylinder to create the bevel effect
 //----------------------------
 
-module body_flat_side(side)
+module body_chamfer_side(side)
 {
-    // Create a rectangular flat by extruding along the body length
-    translate([side * (bodyMaxRadius - flatDepth/2), -flatWidth/2, 0])
-        cube([flatDepth, flatWidth, bodyLength]);
+    // Create a tapered chamfer using a series of stacked cones
+    // This creates a smooth bevel that's subtle and refined
+    translate([side * bodyMaxRadius, 0, 0])
+    {
+        // Bevel sweep along the entire body length
+        for(i = [0 : 0.5 : bodyLength])
+        {
+            translate([0, 0, i])
+                cylinder(h = 0.5, r1 = chamferDepth, r2 = chamferDepth, $fn = 60);
+        }
+    }
 }
 
 
