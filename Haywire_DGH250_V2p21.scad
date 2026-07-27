@@ -7,6 +7,7 @@
 // Added: 2 evenly-spaced circumferential body grooves (2mm depth, 2mm width, sharp angular cut)
 // Fixed: Eye sockets now flat-bottomed recessed pockets (2mm depth, 3mm diameter, opposite sides)
 // Updated: Skirt pocket length increased to 15mm with proportionally scaled ribs
+// Added: Flat sides on main body (4mm width, 1mm depth, full length, opposite sides at eye socket axis)
 //
 
 $fn = 150;
@@ -53,6 +54,10 @@ eyeRadius = eyeDia / 2;    // 1.5mm radius
 eyeDepth = 2.0;            // Depth of flat-bottomed pocket
 eyePos = 17.5;             // Position along body from tip
 
+// Flat sides on body (opposite sides at eye socket axis)
+flatWidth = 4.0;           // Width of each flat
+flatDepth = 1.0;           // Depth of flat recess
+
 
 //----------------------------
 // Main Model Assembly
@@ -96,6 +101,10 @@ difference()
     // Eye sockets - flat-bottomed recessed pockets (both sides)
     eye_socket_flat(1);
     eye_socket_flat(-1);
+
+    // Flat sides on body (opposite sides at eye socket axis)
+    body_flat_side(1);
+    body_flat_side(-1);
 }
 
 
@@ -252,6 +261,20 @@ module eye_socket_flat(side)
         rotate([0, 90 * side, 0])
             // Flat-bottomed cylinder pocket
             cylinder(h = eyeDepth, r = eyeRadius, $fn = 80);
+}
+
+
+//----------------------------
+// Flat Side on Body
+// Creates a flat recessed surface along the entire body length
+// Positioned on opposite sides at the eye socket axis
+//----------------------------
+
+module body_flat_side(side)
+{
+    // Create a rectangular flat by extruding along the body length
+    translate([side * (bodyMaxRadius - flatDepth/2), -flatWidth/2, 0])
+        cube([flatDepth, flatWidth, bodyLength]);
 }
 
 
